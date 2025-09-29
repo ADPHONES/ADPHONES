@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AD PHONES - Réservation</title>
+<style>
+:root{
+--blue:#1366d6;
+--yellow:#ffcc00;
+--dark:#111;
+--muted:#eee;
+--radius:14px;
+font-family:"Segoe UI", Roboto, Arial, sans-serif;
+}
+body{
+margin:0;
+background:linear-gradient(120deg, #1366d6, #ffcc00, #1366d6);
+background-size:400% 400%;
+animation:gradient 15s ease infinite;
+color:white;
+position:relative;
+overflow-x:hidden;
+}
+@keyframes gradient {
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+/* Filigrane AD PHONES en arrière-plan */
+body::before {
+content:"AD PHONES";
+position:fixed;
+top:30%;
+left:50%;
+transform:translateX(-50%);
+font-size:120px;
+font-weight:900;
+color:rgba(255,255,255,0.06);
+white-space:nowrap;
+pointer-events:none;
+z-index:0;
+}
+
+header{
+text-align:center;
+padding:12px 5px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(8px);
+position:relative;
+z-index:1;
+border-radius:0 0 var(--radius) var(--radius);
+}
+header h1{margin:4px 0;font-size:28px;letter-spacing:1px}
+header h1 .yellow{color:var(--yellow)}
+header h1 .blue{color:var(--blue)}
+header p{margin:2px 0;color:var(--muted);font-size:14px}
+
+.container{
+max-width:1000px;
+margin:12px auto;
+display:grid;
+grid-template-columns: 1fr 350px;
+gap:14px;
+padding:0 12px;
+position:relative;
+z-index:1;
+}
+.card{
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(14px);
+border-radius:var(--radius);
+padding:14px;
+box-shadow:0 4px 20px rgba(0,0,0,0.15);
+}
+h2{margin:6px 0;color:var(--yellow);font-size:18px}
+table{width:100%;border-collapse:collapse}
+table th,table td{padding:6px;font-size:14px;border:1px solid rgba(255,255,255,0.2);text-align:center;color:white}
+table th{background:rgba(19,102,214,0.6);color:white}
+.price{font-weight:700;color:var(--yellow)}
+label{display:block;margin-top:6px;font-size:13px}
+select,input,textarea{
+width:100%;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.3);
+background:rgba(255,255,255,0.1);color:white;font-size:14px;
+}
+select option{color:black}
+textarea{min-height:60px}
+button{
+margin-top:8px;background:var(--yellow);color:black;border:none;padding:8px 12px;
+border-radius:8px;font-weight:700;cursor:pointer;
+}
+.slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-top:8px}
+.slot{padding:6px;border:1px solid rgba(255,255,255,0.4);border-radius:8px;cursor:pointer;text-align:center;font-size:13px;background:rgba(255,255,255,0.1);color:white}
+.slot.selected{background:var(--yellow);color:black;border:none;font-weight:600}
+.slot.disabled{opacity:0.4;pointer-events:none}
+footer{text-align:center;padding:8px;color:#fff;font-size:12px;position:relative;z-index:1}
+@media(max-width:850px){.container{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1><span class="yellow">AD</span> <span class="blue">PHONES</span></h1>
+<p>Réparation iPhone — Disponible 7J/7</p>
+<p>📞 0646171394 • 📧 Amadou.dia7520@gmail.com • 👻 Douma75020</p>
+</header>
+
+<div class="container">
+<!-- Tarifs & choix -->
+<section class="card">
+<h2>1) Choisis ta réparation</h2>
+<table>
+<thead>
+<tr><th>Modèle</th><th>Écran</th></tr>
+</thead>
+<tbody>
+<tr><td>X / XR / XS / XS Max / 11</td><td class="price">30 €</td></tr>
+<tr><td>11 Pro / 11 Pro Max</td><td class="price">40 €</td></tr>
+<tr><td>12 / 12 Pro / 12 Mini</td><td class="price">50 €</td></tr>
+<tr><td>12 Pro Max / 13 / 13 Mini</td><td class="price">60 €</td></tr>
+<tr><td>13 Pro Max / 14 / 14 Pro</td><td class="price">70 €</td></tr>
+<tr><td>14 Pro Max / 15 / 15 Pro</td><td class="price">80 €</td></tr>
+<tr><td>15 Pro Max / 16</td><td class="price">90 €</td></tr>
+</tbody>
+</table>
+<p><strong>Batterie :</strong> sur devis</p>
+<p><strong>Vitre arrière :</strong> sur devis</p>
+
+<label>Type de réparation :</label>
+<select id="repairSelect" required>
+<option value="">-- Choisir --</option>
+<option value="Écran">Écran</option>
+<option value="Batterie (sur devis)">Batterie (sur devis)</option>
+<option value="Vitre arrière (sur devis)">Vitre arrière (sur devis)</option>
+</select>
+
+<h2>2) Choisis un créneau</h2>
+<label>Jour :</label>
+<select id="daySelect"></select>
+<div id="slots" class="slot-grid"></div>
+</section>
+
+<!-- Formulaire -->
+<aside class="card">
+<h2>3) Tes infos</h2>
+<form id="form">
+<label>Nom *</label>
+<input id="name" required placeholder="Ton nom complet">
+
+<label>Téléphone *</label>
+<input id="phone" required placeholder="06xxxxxxx">
+
+<label>Email</label>
+<input id="email" placeholder="ex: mail@domaine.com">
+
+<label>Notes</label>
+<textarea id="notes"></textarea>
+
+<button type="submit">Réserver</button>
+</form>
+<div id="confirmation" style="margin-top:8px;font-weight:600;color:var(--yellow)"></div>
+</aside>
+</div>
+
+<footer>
+© AD Phones • Disponible 7J/7 • Snap: Douma75020
+</footer>
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){ emailjs.init("YOUR_PUBLIC_KEY"); })();
+
+const daySelect=document.getElementById("daySelect");
+const slots=document.getElementById("slots");
+const form=document.getElementById("form");
+const confirmBox=document.getElementById("confirmation");
+let selectedSlot=null;
+
+// 7 prochains jours
+function buildDays(){
+const now=new Date();
+for(let i=0;i<7;i++){
+const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i);
+const iso=d.toISOString().split("T")[0];
+const label=d.toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit",month:"short"});
+const opt=document.createElement("option");
+opt.value=iso; opt.textContent=label;
+daySelect.appendChild(opt);
+}
+}
+
+const hours=["09:00","10:00","11:00","13:00","14:00","15:00","16:00"];
+function renderSlots(){
+slots.innerHTML="";
+hours.forEach(h=>{
+const div=document.createElement("div");
+div.className="slot"; div.textContent=h;
+div.onclick=()=>{
+document.querySelectorAll(".slot").forEach(s=>s.classList.remove("selected"));
+div.classList.add("selected"); selectedSlot=h;
+};
+slots.appendChild(div);
+});
+}
+daySelect.onchange=renderSlots;
+
+form.onsubmit=(e)=>{
+e.preventDefault();
+const repair=document.getElementById("repairSelect").value;
+if(!repair){alert("Choisis une réparation");return;}
+if(!selectedSlot){alert("Choisis un créneau");return;}
+const data={
+repair:repair,
+day:daySelect.value,
+slot:selectedSlot,
+name:document.getElementById("name").value,
+phone:document.getElementById("phone").value,
+email:document.getElementById("email").value,
+notes:document.getElementById("notes").value
+};
+emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",data)
+.then(()=>{
+confirmBox.textContent=`✅ Réservation envoyée ! (${data.day} à ${data.slot})`;
+form.reset();
+document.querySelectorAll(".slot").forEach(s=>s.classList.remove("selected"));
+selectedSlot=null;
+},(err)=>{
+alert("Erreur d'envoi : "+JSON.stringify(err));
+});
+}
+
+buildDays();
+renderSlots();
+</script>
+</body>
+</html>
